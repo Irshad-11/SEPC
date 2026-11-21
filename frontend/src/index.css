@@ -216,38 +216,107 @@ code { font-family: var(--mono); font-size: 12px; background: var(--bg2); paddin
 }
 
 
+
+
 /* ---------- footer ---------- */
-.footer { border-top: 1px solid var(--line); background: var(--bg2); font-size: 12.5px; color: var(--text2); }
-.footer-in { max-width: 1240px; margin: 0 auto; padding: 22px 16px 14px; display: grid; grid-template-columns: 1.4fr 0.8fr 1.6fr; gap: 24px; align-items: start; }
-.footer h4 { margin: 0 0 6px; font-size: 12.5px; color: var(--text); }
+/* In index.css: delete the WHOLE old footer section (from the "footer" comment
+   down to the old ".footer .copy" line, plus any footer lines you added inside
+   the mobile @media block), then paste everything below.
+   (The global ".footer-in, .cols-2 { grid-template-columns: 1fr; }" line inside
+   the existing 760px @media can stay, it does no harm.) */
 
-.f-brand-top { display: flex; align-items: center; gap: 12px; color: var(--text); }
-.f-brand-top b { font-size: 34px; line-height: 1; letter-spacing: 1px; }
-.f-brand-sub { margin-top: 6px; font-size: 13px; }
-.f-dept { height: 56px; margin-top: 12px; display: block; }
+.footer { --f-logo: 40px; /* ONE size for both logos */ border-top: 1px solid var(--line); background: var(--bg2); font-size: 12px; color: var(--text2); }
+.footer h4 { margin: 0 0 4px; font-size: 12px; color: var(--text); }
+.footer-in > * { min-width: 0; }
 
-.footer .f-links { display: flex; flex-direction: column; gap: 3px; justify-self: center; }
+/* 3 blocks: [SEPC + Dept logo] [Links] [Behind This Project] */
+.footer-in { max-width: 1240px; margin: 0 auto; padding: 14px 16px 10px; display: grid; grid-template-columns: auto 1fr auto; column-gap: 36px; align-items: start; }
 
-.footer .team { justify-self: end; position: relative; }
-.member { position: relative; margin-bottom: 4px; }
-.member-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; line-height: 1.6; }
+/* 1. Brand: [SEPC logo + SEPC text, same size] | [Dept logo, same height], full form small below */
+.f-brand-group { align-self: center; min-width: 0; }
+.f-brand-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 18px; }
+.f-mark { display: flex; align-items: center; gap: 10px; color: var(--text); }
+.footer .sepc-logo { width: var(--f-logo); height: var(--f-logo); flex: none; }
+.f-mark b { font-size: calc(var(--f-logo) * 0.8); line-height: 1; letter-spacing: 0.02em; }
+.f-dept-wrap { display: flex; align-items: center; padding-left: 18px; border-left: 1px solid var(--line2); }
+.f-dept { height: var(--f-logo); width: auto; display: block; }
+.f-brand-sub { margin-top: 6px; font-size: 11px; color: var(--text2); }
+
+/* 2. Links: two columns, filled row by row (ln1 ln2 / ln3 ln4 / ln5 ln6) */
+.footer .f-links { justify-self: center; }
+.f-links-grid { display: grid; grid-template-columns: repeat(2, auto); gap: 3px 36px; }
+.f-links-grid a { display: block; white-space: nowrap; }
+.f-links-grid a.ext::after { content: ' \2197'; font-size: 10px; opacity: 0.6; }
+
+/* 3. Team: the block sits at the far right edge, text inside is left-aligned */
+.footer .team { justify-self: end; text-align: left; position: relative; display: flex; flex-direction: column; align-items: flex-start; }
+.team-tag { margin: -2px 0 6px; font-size: 11px; font-style: italic; color: var(--muted); }
+.member { position: relative; align-self: stretch; margin-bottom: 3px; }
+.member-row { display: flex; align-items: center; justify-content: flex-start; gap: 6px; flex-wrap: nowrap; white-space: nowrap; line-height: 1.6; }
+.member-row .role { min-width: 140px; } /* keeps the names in one neat column */
 .member-row b { font-weight: 600; color: var(--text); }
 
-.icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border: 1px solid var(--line2); border-radius: 4px; background: var(--bg); color: var(--text2); cursor: pointer; padding: 0; }
-.icon-btn:hover, .icon-btn.on { border-color: var(--accent); color: var(--accent); }
+/* "+2 more": the extra members slide open (height animates 0 -> auto) */
+.team-extra { align-self: stretch; display: grid; grid-template-rows: 0fr; opacity: 0; visibility: hidden; transition: grid-template-rows 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease, visibility 0s linear 0.4s; }
+.team-extra.open { grid-template-rows: 1fr; opacity: 1; visibility: visible; transition-delay: 0s; }
+.team-extra-inner { min-height: 0; overflow: hidden; }
+.team-extra.settled .team-extra-inner { overflow: visible; } /* so the info overlay is not clipped once open */
+
+.icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border: 1px solid var(--line2); border-radius: 4px; background: var(--bg); color: var(--text2); cursor: pointer; padding: 0; transition: box-shadow 0.15s, border-color 0.15s, color 0.15s; }
+.icon-btn:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 1px 4px rgb(0 0 0 / 0.18); }
+.icon-btn.on { border-color: var(--accent); color: var(--accent); box-shadow: 0 3px 10px rgb(0 0 0 / 0.3); }
 
 .more-btn { margin-top: 2px; border: 0; background: none; padding: 0; color: var(--accent); font: inherit; font-weight: 600; cursor: pointer; }
 .more-btn:hover { text-decoration: underline; }
 
-/* overlay opens upward, right under/over the name */
-.member-pop { position: absolute; right: 0; bottom: calc(100% + 6px); width: 280px; z-index: 30; background: var(--bg); color: var(--text); border: 1px solid var(--line2); border-radius: 6px; padding: 10px 12px; box-shadow: 0 8px 24px rgb(0 0 0 / 0.18); }
+/* overlay opens upward, aligned to the right edge, with a clear drop shadow */
+.member-pop { position: absolute; right: 0; bottom: calc(100% + 8px); width: 300px; z-index: 30; text-align: left; white-space: normal; background: var(--bg); color: var(--text); border: 1px solid var(--line2); border-radius: 6px; padding: 10px 12px; box-shadow: 0 10px 30px rgb(0 0 0 / 0.28), 0 2px 6px rgb(0 0 0 / 0.12); }
+:root[data-theme='dark'] .member-pop { box-shadow: 0 10px 30px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(255 255 255 / 0.05); }
 .pop-name { font-weight: 600; font-size: 13.5px; margin-bottom: 6px; }
 .pop-line { display: flex; justify-content: space-between; gap: 12px; padding: 2px 0; border-bottom: 1px dashed var(--line); }
-.pop-work { margin-top: 8px; line-height: 1.5; color: var(--text2); }
+.pop-line span:last-child { text-align: right; }
+.pop-head { margin-top: 10px; font-weight: 600; font-size: 12px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; }
+.pop-work { margin: 4px 0 0; padding-left: 16px; line-height: 1.5; color: var(--text2); }
+.pop-work li { margin-bottom: 3px; }
 
 .footer .copy { max-width: 1240px; margin: 0 auto; padding: 6px 16px 10px; font-size: 11.5px; color: var(--muted); display: flex; justify-content: space-between; border-top: 1px solid var(--line); }
 
-  .footer .f-links, .footer .team { justify-self: start; }
-  .member-pop { right: auto; left: 0; width: min(280px, 90vw); }
+/* medium screens: logos + links on one row, team below */
+@media (max-width: 1180px) {
+  .footer-in { grid-template-columns: 1fr auto; row-gap: 16px; }
+  .footer .f-links { justify-self: end; }
+  .footer .team { grid-column: 1 / -1; }
+}
 
-  
+/* phones: stacked, left-aligned, smaller logos and text */
+@media (max-width: 760px) {
+  .footer { --f-logo: 34px; }
+  .footer-in { grid-template-columns: 1fr; row-gap: 14px; }
+  .footer .f-links, .footer .team { justify-self: start; }
+  .f-dept-wrap { padding-left: 14px; }
+  .member-row { flex-wrap: wrap; white-space: normal; row-gap: 2px; }
+  .member-row .role { min-width: 0; }
+  .member-pop { right: auto; left: 0; width: min(300px, calc(100vw - 32px)); }
+  .footer .copy { flex-wrap: wrap; gap: 2px 12px; }
+}
+
+/* very small phones: shrink everything a bit more */
+@media (max-width: 420px) {
+  .footer { --f-logo: 28px; font-size: 11px; }
+  .footer h4 { font-size: 11px; }
+  .f-brand-row { gap: 8px 12px; }
+  .f-mark { gap: 8px; }
+  .f-dept-wrap { padding-left: 12px; }
+  .f-brand-sub { font-size: 10px; }
+  .f-links-grid { gap: 2px 22px; }
+  .team-tag { font-size: 10px; }
+  .member-row { gap: 4px; }
+  .member-row .small { font-size: 10px; }
+  .member-row .role { flex: 0 0 100%; font-size: 10px; line-height: 1.2; } /* role on its own line */
+  .member { margin-bottom: 6px; }
+  .icon-btn { width: 20px; height: 20px; }
+  .member-pop { font-size: 11px; padding: 8px 10px; }
+  .pop-name { font-size: 12.5px; }
+  .pop-head { font-size: 11px; }
+  .footer .copy { font-size: 10px; }
+}

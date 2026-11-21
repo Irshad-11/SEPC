@@ -4,14 +4,19 @@ import SepcLogo from './SepcLogo.jsx'
 import deptLight from '../assets/dept-logo-olive.png'
 import deptDark from '../assets/dept-logo-white.png'
 
-// role, name, student id, batch, linkedin (hardcoded for now), contributions
-// Supervisor has no id/batch, so those are optional; `designation` is shown instead.
+// External links (hardcoded for now)
+const UNIVERSITY_URL = 'https://uftb.ac.bd/'
+const DEPARTMENT_URL = 'https://se.uftb.ac.bd/'
+
+// Replace the placeholder LinkedIn URLs with the real ones when you have them.
+// Supervisor has no student id / batch, so those fields are optional;
+// `designation` is shown for him instead.
 const TEAM = [
   {
     role: 'Project Supervisor',
     name: 'Md. Mahmodul Hasan',
     designation: 'Lecturer, Department of Software Engineering',
-    linkedin: 'https://www.linkedin.com/in/your-profile',
+    linkedin: 'https://www.linkedin.com/in/md-mahmodul-hasan-09173b305/',
     work: [
       'Supervisor of this project, providing academic guidance and direction.',
       'Reviewed the project scope and supported key decisions throughout development.',
@@ -22,7 +27,7 @@ const TEAM = [
     name: 'Irshad Hossain',
     id: '2303030',
     batch: '2023-24',
-    linkedin: 'https://www.linkedin.com/in/your-profile',
+    linkedin: 'https://www.linkedin.com/in/irshad-hossain',
     work: [
       'Led the project and coordinated the overall development effort.',
       'Designed the whole site, including its structure, visual identity and user experience.',
@@ -31,10 +36,10 @@ const TEAM = [
   },
   {
     role: 'Backend Developer',
-    name: 'Mahbub Tanmay',
+    name: 'Md Mahbub Tanmay',
     id: '2403016',
     batch: '2024-25',
-    linkedin: 'https://www.linkedin.com/in/your-profile',
+    linkedin: 'https://www.linkedin.com/in/mdmahbubtanmay/',
     work: [
       'Designed the REST API that powers the platform.',
       'Built and managed the backend logic and request handling.',
@@ -42,10 +47,10 @@ const TEAM = [
   },
   {
     role: 'Frontend Developer',
-    name: 'Mahbubur Rahman Sifat',
+    name: 'Md Mahbubul Alom Sifat',
     id: '2303028',
     batch: '2023-24',
-    linkedin: 'https://www.linkedin.com/in/your-profile',
+    linkedin: 'https://www.linkedin.com/in/mahbubsifat/',
     work: [
       'Implemented the frontend interface from the approved designs.',
       'Built the pages and components, and connected them to the API.',
@@ -53,13 +58,13 @@ const TEAM = [
   },
   {
     role: 'UI/UX & Documentation',
-    name: 'Ramjan Ali',
+    name: 'Md Ramjan Ali',
     id: '2403019',
     batch: '2024-25',
-    linkedin: 'https://www.linkedin.com/in/your-profile',
+    linkedin: 'https://www.linkedin.com/in/md--ramzan--ali/',
     work: [
-      'Supervised the UI/UX of the platform to keep it consistent and easy to use.',
-      'Wrote and maintained the project documentation.',
+      'UI/UX expert of the project, shaping a consistent and easy-to-use interface.',
+      'Documentation writing.',
     ],
   },
 ]
@@ -88,10 +93,11 @@ function Member({ m, open, onToggle }) {
   return (
     <div className="member">
       <div className="member-row">
-        <span className="muted">{m.role}:</span>
+        <span className="muted role">{m.role}:</span>
         <b>{m.name}</b>
         {m.batch && <span className="muted small">({m.batch})</span>}
-        <a className="icon-btn" href={m.linkedin} target="_blank" rel="noreferrer" aria-label={`${m.name} on LinkedIn`} title="LinkedIn">
+        <a className="icon-btn" href={m.linkedin} target="_blank" rel="noreferrer"
+          aria-label={`${m.name} on LinkedIn`} title="LinkedIn">
           <LinkedInIcon />
         </a>
         <button type="button" className={`icon-btn${open ? ' on' : ''}`} onClick={onToggle}
@@ -106,8 +112,12 @@ function Member({ m, open, onToggle }) {
           {m.designation && (
             <div className="pop-line"><span className="muted">Position</span><span>{m.designation}</span></div>
           )}
-          {m.id && <div className="pop-line"><span className="muted">Student ID</span><span className="mono">{m.id}</span></div>}
-          {m.batch && <div className="pop-line"><span className="muted">Batch</span><span>{m.batch}</span></div>}
+          {m.id && (
+            <div className="pop-line"><span className="muted">Student ID</span><span className="mono">{m.id}</span></div>
+          )}
+          {m.batch && (
+            <div className="pop-line"><span className="muted">Batch</span><span>{m.batch}</span></div>
+          )}
           <div className="pop-head">Contribution</div>
           <ul className="pop-work">
             {m.work.map((w) => <li key={w}>{w}</li>)}
@@ -121,6 +131,9 @@ function Member({ m, open, onToggle }) {
 export default function Footer({ theme }) {
   const dark = theme === 'dark'
   const [showAll, setShowAll] = useState(false)
+  // true once the expand animation has finished (lets the overlay of the extra
+  // members escape the clipped, animating box)
+  const [settled, setSettled] = useState(false)
   const [openId, setOpenId] = useState(null)
   const teamRef = useRef(null)
 
@@ -137,38 +150,69 @@ export default function Footer({ theme }) {
     }
   }, [openId])
 
-  const list = showAll ? TEAM : TEAM.slice(0, VISIBLE)
-  const hidden = TEAM.length - VISIBLE
+  // after the expand animation (~0.4s) mark it as settled
+  useEffect(() => {
+    if (!showAll) return
+    const t = setTimeout(() => setSettled(true), 420)
+    return () => clearTimeout(t)
+  }, [showAll])
+
+  const toggleMore = () => {
+    if (showAll) setSettled(false)
+    setShowAll(!showAll)
+    setOpenId(null)
+  }
+
+  const first = TEAM.slice(0, VISIBLE)
+  const extra = TEAM.slice(VISIBLE)
+  const renderMember = (m) => (
+    <Member key={m.name} m={m} open={openId === m.name}
+      onToggle={() => setOpenId(openId === m.name ? null : m.name)} />
+  )
 
   return (
     <footer className="footer">
       <div className="footer-in">
-        <div className="f-brand">
-          <div className="f-brand-top">
-            <SepcLogo size={44} />
-            <b>SEPC</b>
+        <div className="f-brand-group">
+          <div className="f-brand-row">
+            <div className="f-mark">
+              <SepcLogo size={40} />
+              <b>SEPC</b>
+            </div>
+            <div className="f-dept-wrap">
+              <img className="f-dept" src={dark ? deptDark : deptLight} alt="Department of Software Engineering, UFTB" />
+            </div>
           </div>
           <div className="f-brand-sub">Software Engineering Programming Community</div>
-          <img className="f-dept" src={dark ? deptDark : deptLight} alt="Department of Software Engineering, UFTB" />
         </div>
 
         <div className="f-links">
           <h4>Links</h4>
-          <Link to="/">Leaderboard</Link>
-          <Link to="/manage">Manage Student</Link>
-          <Link to="/settings">Settings</Link>
-          <Link to="/login">Login</Link>
+          <div className="f-links-grid">
+            <Link to="/">Leaderboard</Link>
+            <Link to="/manage">Manage Student</Link>
+            <Link to="/settings">Settings</Link>
+            <Link to="/login">Login</Link>
+            <a className="ext" href={UNIVERSITY_URL} target="_blank" rel="noreferrer">University Site</a>
+            <a className="ext" href={DEPARTMENT_URL} target="_blank" rel="noreferrer">Department Site</a>
+          </div>
         </div>
 
         <div className="team" ref={teamRef}>
-          <h4>Developers</h4>
-          {list.map((m) => (
-            <Member key={m.name} m={m} open={openId === m.name}
-              onToggle={() => setOpenId(openId === m.name ? null : m.name)} />
-          ))}
-          <button type="button" className="more-btn"
-            onClick={() => { setShowAll(!showAll); setOpenId(null) }}>
-            {showAll ? 'Show less' : `+${hidden} more`}
+          <h4>Behind This Project</h4>
+          <div className="team-tag">The people who made it real</div>
+
+          {first.map(renderMember)}
+
+          {/* extra members: height animates open/closed smoothly */}
+          <div className={`team-extra${showAll ? ' open' : ''}${settled ? ' settled' : ''}`} inert={!showAll}>
+            <div className="team-extra-inner">
+              {extra.map(renderMember)}
+            </div>
+          </div>
+
+          <button type="button" className="more-btn" onClick={toggleMore} aria-expanded={showAll}>
+            {showAll ? 'Show less' : `+${extra.length} more`}
           </button>
         </div>
       </div>

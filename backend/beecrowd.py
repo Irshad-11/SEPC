@@ -12,6 +12,7 @@ Pura flow ta short e:
        karon Playwright nije browser launch korle Cloudflare automation dhore
        fele ar challenge loop e atke jay.
     2. Browser chalu hoyar sathe sathe window minimize kore dei.
+       (Ekhon default e minimize BONDHO. Chalu korte HIDE_WINDOW=1 dite hobe.)
     3. Cloudflare challenge ashle 8 second wait kori. Nije pass na hole window
        samne ani + desktop notification dei, jate user ekbar click kore dey.
        Pass hoye gele abar minimize kori.
@@ -34,6 +35,7 @@ Environment variable (shob optional):
     CDP_PORT        Browser er remote debugging port. Default: 9222
     BROWSER_PATH    Brave/Chrome er path, jodi auto-detect na hoy
     BEECROWD_OUTPUT JSON output file er path
+    HIDE_WINDOW     1 dile browser window minimize kore. Default: 0 (minimize hoy na)
 """
 
 from __future__ import annotations
@@ -82,6 +84,14 @@ PORT = int(os.environ.get("CDP_PORT", "9222"))
 PROFILE_DIR = os.path.join(BASE_DIR, "cf_profile_brave")
 OUTPUT_JSON = os.environ.get("BEECROWD_OUTPUT",
                              os.path.join(BASE_DIR, "beecrowd_stats.json"))
+
+"""
+Window minimize korbo kina. Default: bondho (0), mane browser window normal
+obosthay thakbe. Minimize chalu korte chaile:
+    HIDE_WINDOW=1 python beecrowd.py
+local_sync.py theke chalaleo kaj kore, karon .env e HIDE_WINDOW=1 dile hoy.
+"""
+HIDE_WINDOW = os.environ.get("HIDE_WINDOW", "0") == "1"
 
 CHALLENGE_GRACE_SEC = 8
 CHALLENGE_TIMEOUT_SEC = 180
@@ -470,7 +480,10 @@ class BrowserWindow:
 
     def hide(self) -> None:
         """
-        Shob Brave window minimize kori.
+        Shob Brave window minimize kori (shudhu HIDE_WINDOW=1 hole).
+
+        HIDE_WINDOW bondho thakle (default) kichui kori na, window jemon
+        ache temon thake.
 
         Retry keno:
             Browser chalu hoyar shathe shathe minimize pathale window tokhono
@@ -482,6 +495,8 @@ class BrowserWindow:
         4 second noshto na hoy, ar user ke warning dei.
         """
         self._asked = False
+        if not HIDE_WINDOW:
+            return
         if not self.visible:
             return
 
@@ -662,8 +677,8 @@ def wait_until_challenge_passed(user_id: str, proc: subprocess.Popen | None,
     Loop e proti second:
         1. Browser/process mara gele error raise kori.
         2. Amader profile URL er tab ta khuji.
-        3. Prothom bar tab pele 1.5 second wait kore (window screen e ashar
-           jonno) minimize kori.
+        3. Prothom bar tab pele (HIDE_WINDOW chalu thakle) 1.5 second wait kore
+           window screen e ashar jonno minimize kori.
         4. Title e challenge thakle timer chalai. CHALLENGE_GRACE_SEC er beshi
            thakle window samne ani + notify kori.
         5. Title ache ar challenge na hole pass, window lukiye True return kori.
@@ -687,7 +702,8 @@ def wait_until_challenge_passed(user_id: str, proc: subprocess.Popen | None,
         if tab:
             if not attached:
                 window.attach(tab["id"])
-                time.sleep(1.5)
+                if HIDE_WINDOW:
+                    time.sleep(1.5)
                 window.hide()
                 attached = True
 
