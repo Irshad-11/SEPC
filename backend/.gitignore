@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+*.db
+*.db-journal
+cf_profile_brave/
+beecrowd_stats.json
+.env
