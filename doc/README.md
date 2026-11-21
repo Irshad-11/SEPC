@@ -56,16 +56,16 @@ From a terminal: `python app.py demo`
    ```
    (If `curl-cffi` fails to install, delete that line from requirements.txt. It's optional; Codeforces and LeetCode work without it.)
 2. **Web** tab → *Add a new web app* → *Manual configuration* → Python 3.11.
-3. **Virtualenv**: `/home/<username>/SEPC/backend/venv`
+3. **Virtualenv**: `/home/sepcuftb/SEPC/backend/venv`
 4. Open the **WSGI configuration file**, delete everything in it, and paste this:
    ```python
    import sys
-   path = "/home/<username>/SEPC/backend"
+   path = "/home/sepcuftb/SEPC/backend"
    if path not in sys.path:
        sys.path.insert(0, path)
    from app import app as application
    ```
-5. **Reload** → `https://<username>.pythonanywhere.com/api/health` → you should see `"on_pythonanywhere": true, "server_platforms": ["codeforces", "leetcode"]`.
+5. **Reload** → `https://sepcuftb.pythonanywhere.com/api/health` → you should see `"on_pythonanywhere": true, "server_platforms": ["codeforces", "leetcode"]`.
 
 ### Updates later
 ```bash
