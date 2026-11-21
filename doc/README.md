@@ -48,7 +48,7 @@ From a terminal: `python app.py demo`
 ### First-time setup
 1. Push the code to GitHub. Then in a PythonAnywhere **Bash console**:
    ```bash
-   git clone https://github.com/<you>/<repo>.git SEPC
+   git clone https://github.com/Irshad-11/SEPC.git SEPC
    cd SEPC/backend
    python3.11 -m venv venv
    source venv/bin/activate
