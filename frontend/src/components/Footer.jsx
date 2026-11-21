@@ -200,7 +200,6 @@ export default function Footer({ theme }) {
 
         <div className="team" ref={teamRef}>
           <h4>Behind This Project</h4>
-          <div className="team-tag">The people who made it real</div>
 
           {first.map(renderMember)}
 
